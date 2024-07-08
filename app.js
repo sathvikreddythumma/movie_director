@@ -3,6 +3,7 @@ const app = express();
 const path = require("path");
 const { open } = require("sqlite");
 const sqlite3 = require("sqlite3");
+app.use(express.json());
 const dbPath = path.join(__dirname, "moviesData.db");
 
 let db = null;
@@ -24,19 +25,15 @@ initializeDBAndServer();
 
 //API1
 app.get("/movies/", async (request, response) => {
-  const getMovieNames = `SELECT * FROM movie;`;
+  const getMovieNames = `SELECT movie_name FROM movie;`;
   const movArray = await db.all(getMovieNames);
   response.send(
     movArray.map((eachMovie) => ({
-      movieId: eachMovie.movie_id,
-      directorId: eachMovie.director_id,
-      movieName: eachMovie.movie_name,
-      leadActor: eachMovie.lead_actor,
-    }))
+      movieName: eachMovie.movie_name}))
   );
 });
 //API2
-app.use(express.json());
+
 app.post("/movies/", async (request, response) => {
   const { directorId, movieName, leadActor } = request.body;
   const addMovie = `INSERT into movie
